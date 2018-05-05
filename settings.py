@@ -23,33 +23,32 @@ docs = []
 # F = open("film.txt",encoding="utf8")
 # docs.append(F.read())
 
-F = open("3.txt",encoding="utf8")
-FString = F.read()
-docs += FString.split('#')
+	        # '3', // боевик
+            # '8', // драма
+            # '6', // комедия
+            # '4', // триллер
+            # '2'  // фантастика
 
-# F = open("8.txt",encoding="utf8")
-# FString = F.read()
-# docs += FString.split('#')
+#filmsGenreNum = [2,3,4,6,8] 10-фильмов, 10-обзоров
+filmsGenreNum = [3,4,6,8]
+filmsGenre = ["фантастика","боевик","триллер","комедия","драма","наш фильм"]
+filmsNum = []
 
-# F = open("6.txt",encoding="utf8")
-# FString = F.read()
-# docs += FString.split('#')
-
-# F = open("4.txt",encoding="utf8")
-# FString = F.read()
-# docs += FString.split('#')
-
-# F = open("2.txt",encoding="utf8")
-# FString = F.read()
-# docs += FString.split('#')
+for i in range(0,len(filmsGenreNum)):
+	F = open(str(filmsGenreNum[i]) + ".txt",encoding="utf8")
+	FString = str(F.read()).split('#')
+	filmsNum.append(len(FString))
+	docs += FString
 
 F = open("film.txt",encoding="utf8")
-FString = F.read()
-docs += FString.split('#')
+FString = str(F.read()).split('#')
+filmsNum.append(len(FString))
+docs += FString
 
+print(filmsNum)
 for i in range(len(docs)):
     print("-------str№: " + str(i) + "---------")
-    #print(docs[i])
+    #print(docs)
 
 stem='russian'
 #'danish', 'dutch', 'english', 'finnish', 'french', 'german', 'hungarian', 'italian',

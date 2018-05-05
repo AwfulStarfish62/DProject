@@ -11,7 +11,7 @@ from sklearn.cluster import KMeans
 import nltk
 nltk.download('punkt')
 import scipy
-from settings import docs,stem,stopWords
+from settings import docs,stem,stopWords,filmsGenre,filmsNum
 #docs = docsOld
 ddd=len(docs)
 from nltk.stem import SnowballStemmer
@@ -223,15 +223,30 @@ def Grafics_End(res3,res4,c): # Построение график с прогр�
     plt.axis([min(res3[0])-e3, max(res3[0])+e3, min(res4[0])-e4, max(res4[0])+e4])
     plt.plot(res3[0], res4[0], color='b', linestyle=' ', marker='o',ms=10,label='Documents №')
     plt.legend(loc='best')
-    k={}
-    for i in range(0,len(doc)):
-        xv=float((res3[0])[i])
-        yv=float((res4[0])[i])
-        if (xv,yv) not in k.keys():
-            k[xv,yv]=str(i)
-        elif (xv,yv) in k.keys():
-            k[xv,yv]= k[xv,yv]+','+str(i)
-        plt.annotate(k[xv,yv], xy=((res3[0])[i], (res4[0])[i]), xytext=((res3[0])[i]+0.015, (res4[0])[i]+0.015),arrowprops=dict(facecolor='blue', shrink=0.1),)
+
+    allFilmsNum = 0
+    for j in range(0,len(filmsNum)):
+        k={}
+        xvMass=[]
+        yvMass=[]
+        print("filmsNum["+ str(j) +"] = " + str(filmsNum[j]))
+        for i in range(0,filmsNum[j]):
+            xv=float((res3[0])[i+allFilmsNum])
+            yv=float((res4[0])[i+allFilmsNum])
+            xvMass.append(xv)
+            yvMass.append(yv)
+            if (xv,yv) not in k.keys():
+                k[xv,yv]=str(i+allFilmsNum)
+            elif (xv,yv) in k.keys():
+                k[xv,yv]= k[xv,yv]+','+str(i+allFilmsNum)
+            #plt.annotate(k[xv,yv], xy=((res3[0])[i], (res4[0])[i]), xytext=((res3[0])[i]+0.015, (res4[0])[i]+0.015),arrowprops=dict(facecolor='blue', shrink=0.1),)
+        allFilmsNum+=filmsNum[j]
+        print("\n\nSUM")
+        print(xvMass)
+        print(yvMass)
+        plt.plot(np.array(xvMass).sum()/len(xvMass), np.array(yvMass).sum()/len(yvMass), color='b', linestyle=' ', marker='o',ms=10,label='Documents №')
+        plt.annotate(filmsGenre[j], xy=(np.array(xvMass).sum()/len(xvMass), np.array(yvMass).sum()/len(yvMass)), xytext=(np.array(xvMass).sum()/len(xvMass)+0.015, np.array(yvMass).sum()/len(yvMass)+0.015),arrowprops=dict(facecolor='blue', shrink=0.1),)
+
     plt.grid()
     plt.show() 
     print("end Grafics_End")
