@@ -3,6 +3,7 @@
 import sys
 from tkinter.filedialog import *
 from tkinter.messagebox import *
+import xalglib
 import pickle
 import numpy
 import numpy as np
@@ -27,9 +28,11 @@ txt2 = open("txt2.txt","a")
 def STart():
     print("start STart")
     #clear_all()
+    if var3==1:
+        return Save_Load_Data([],[])
     txt.write(str("Исходные документы\n"))
     for k, v in enumerate(docs):
-           txt.write(str(str("Ном.док--%u Текст-%s \n"%(k,v)).encode("utf-8")))
+         txt.write(str(str("Ном.док--%u Текст-%s \n"%(k,v)).encode("utf-8")))
     print(var1)
     if  var1==0:
         print("end STart")
@@ -160,7 +163,28 @@ def TF_IDF(A,c,p):
      return U_S_Vt(A,c,p,l)
 def U_S_Vt(A,c,p,l):
     print("start U_S_Vt")
+    #U, S,Vt = numpy.linalg.svd(A)
+    a = xalglib.cmatrixrndcond(25, 25)
+    print("A = ")
+    print(A)
+    print("a = ")
+    print(a)
+    print("test = ")
+    print([[1.,2.],[3.,4.]])
+    result, U, S, Vt = xalglib.rmatrixsvd([[0.1,0.2],[0.3,0.4]], 2, 2, 2, 2, 2)
+    print("U = ")
+    print(U)
+    print("S = ")
+    print(S)
+    print("Vt")
+    print(Vt)
     U, S,Vt = numpy.linalg.svd(A)
+    print("U = ")
+    print(U)
+    print("S = ")
+    print(S)
+    print("Vt")
+    print(Vt)
     rows, cols = U.shape
     for j in range(0,cols):
         for i  in range(0,rows):
@@ -197,55 +221,70 @@ def U_S_Vt(A,c,p,l):
         txt1.write(str(st))
         txt1.write(str("\n")) 
     print("end U_S_Vt")
-    return Save_Load_Data(res3,res4,c)
+    return Save_Load_Data(res3,res4)
 
-def Save_Load_Data(res3,res4,c):
+def Save_Load_Data(res3,res4):
 	if  var3==0:
 		print("end SaveData")
 		print("res3 = \n")
 		print(res3)
 		print("res4 = \n")
 		print(res4)
-		return Grafics_End(res3,res4,c)
-	elif  var3==1:
-		print("end LoadData")
-		return Grafics_End(res3,res4,c) 
+		data = []
+		with open('data.pickle', 'rb') as f:
+			data = pickle.load(f)
+		with open('data.pickle', 'wb') as f:
+			allFilmsNum = 0
+			for j in range(0,len(filmsNum)):
+				k={}
+				xvMass=[]
+				yvMass=[]
+				for i in range(0,filmsNum[j]):
+					xv=float((res3[0])[i+allFilmsNum])
+					yv=float((res4[0])[i+allFilmsNum])
+					xvMass.append(xv)
+					yvMass.append(yv)
+					if (xv,yv) not in k.keys():
+						k[xv,yv]=str(i+allFilmsNum)
+					elif (xv,yv) in k.keys():
+						k[xv,yv]= k[xv,yv]+','+str(i+allFilmsNum)
+				allFilmsNum+=filmsNum[j]
+				print("\n\nDATA")
+				print(data)
 
-def Grafics_End(res3,res4,c): # Построение график с программным управлением масштабом
+				data.append([filmsGenre[j], xvMass, yvMass])
+			
+			pickle.dump(data, f)
+		return Grafics_End(data,res3,res4)
+	elif  var3==1:
+		data = []
+		with open('data.pickle', 'rb') as f:
+			data = pickle.load(f)
+		print("end LoadData")
+		return Grafics_End(data,res3,res4) 
+
+def Grafics_End(data,res3,res4): # Построение график с программным управлением масштабом
     print("start Grafics_End")
     plt.title('Semantic space', size=14)
     plt.xlabel('x-axis', size=14)
     plt.ylabel('y-axis', size=14)
 
-    e3=(max(res3[0])-min(res3[0]))/len(doc)
-    e4=(max(res4[0])-min(res4[0]))/len(doc)
+    # e3=(max(res3[0])-min(res3[0]))/len(doc)
+    # e4=(max(res4[0])-min(res4[0]))/len(doc)
 
-    plt.axis([min(res3[0])-e3, max(res3[0])+e3, min(res4[0])-e4, max(res4[0])+e4])
-    plt.plot(res3[0], res4[0], color='b', linestyle=' ', marker='o',ms=10,label='Documents №')
+    # plt.axis([-3., 3., -3., 3.)
+    # plt.axis([min(res3[0])-e3, max(res3[0])+e3, min(res4[0])-e4, max(res4[0])+e4])
+    # plt.plot(res3[0], res4[0], color='b', linestyle=' ', marker='o',ms=10,label='Documents №')
     plt.legend(loc='best')
 
     allFilmsNum = 0
-    for j in range(0,len(filmsNum)):
-        k={}
-        xvMass=[]
-        yvMass=[]
-        print("filmsNum["+ str(j) +"] = " + str(filmsNum[j]))
-        for i in range(0,filmsNum[j]):
-            xv=float((res3[0])[i+allFilmsNum])
-            yv=float((res4[0])[i+allFilmsNum])
-            xvMass.append(xv)
-            yvMass.append(yv)
-            if (xv,yv) not in k.keys():
-                k[xv,yv]=str(i+allFilmsNum)
-            elif (xv,yv) in k.keys():
-                k[xv,yv]= k[xv,yv]+','+str(i+allFilmsNum)
-            #plt.annotate(k[xv,yv], xy=((res3[0])[i], (res4[0])[i]), xytext=((res3[0])[i]+0.015, (res4[0])[i]+0.015),arrowprops=dict(facecolor='blue', shrink=0.1),)
-        allFilmsNum+=filmsNum[j]
+    for j in range(0,len(data)):
+
         print("\n\nSUM")
-        print(xvMass)
-        print(yvMass)
-        plt.plot(np.array(xvMass).sum()/len(xvMass), np.array(yvMass).sum()/len(yvMass), color='b', linestyle=' ', marker='o',ms=10,label='Documents №')
-        plt.annotate(filmsGenre[j], xy=(np.array(xvMass).sum()/len(xvMass), np.array(yvMass).sum()/len(yvMass)), xytext=(np.array(xvMass).sum()/len(xvMass)+0.015, np.array(yvMass).sum()/len(yvMass)+0.015),arrowprops=dict(facecolor='blue', shrink=0.1),)
+        print(data)
+        plt.plot(data[j][1], data[j][2], color='b', linestyle=' ', marker='o',ms=10,label=str(data[j][0]))
+        plt.plot(np.array(data[j][1]).sum()/len(data[j][1]), np.array(data[j][2]).sum()/len(data[j][2]), color='b', linestyle=' ', marker='o',ms=10,label='Documents №')
+        plt.annotate(data[j][0], xy=(np.array(data[j][1]).sum()/len(data[j][1]), np.array(data[j][2]).sum()/len(data[j][2])), xytext=(np.array(data[j][1]).sum()/len(data[j][1])+0.015, np.array(data[j][2]).sum()/len(data[j][2])+0.015),arrowprops=dict(facecolor='blue', shrink=0.1),)
 
     plt.grid()
     plt.show() 

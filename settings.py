@@ -30,8 +30,9 @@ docs = []
             # '2'  // фантастика
 
 #filmsGenreNum = [2,3,4,6,8] 10-фильмов, 10-обзоров
-filmsGenreNum = [3,4,6,8]
-filmsGenre = ["фантастика","боевик","триллер","комедия","драма","наш фильм"]
+filmsGenreNum = [6]
+#filmsGenre = ["боевик","комедия","драма","наш фильм"]
+filmsGenre = ["комедия","драма"]
 filmsNum = []
 
 for i in range(0,len(filmsGenreNum)):
@@ -40,10 +41,10 @@ for i in range(0,len(filmsGenreNum)):
 	filmsNum.append(len(FString))
 	docs += FString
 
-F = open("film.txt",encoding="utf8")
-FString = str(F.read()).split('#')
-filmsNum.append(len(FString))
-docs += FString
+# F = open("film.txt",encoding="utf8")
+# FString = str(F.read()).split('#')
+# filmsNum.append(len(FString))
+# docs += FString
 
 print(filmsNum)
 for i in range(len(docs)):
